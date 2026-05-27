@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { ProfileForm } from '@/components/account/ProfileForm'
+import { AvatarUpload } from '@/components/account/AvatarUpload'
 import { Card } from '@/components/ui/Card'
 import Link from 'next/link'
 import type { Profile } from '@/types'
@@ -17,6 +18,8 @@ export default async function AccountPage() {
     .single()
 
   if (!profile) redirect('/auth/login')
+
+  const googleAvatar = (user.user_metadata?.avatar_url as string | null) ?? null
 
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 py-12">
@@ -41,6 +44,16 @@ export default async function AccountPage() {
       </div>
 
       <Card>
+        <div className="flex flex-col items-center mb-6">
+          <AvatarUpload
+            userId={user.id}
+            currentAvatarUrl={(profile as Profile).avatar_url}
+            defaultAvatarUrl={googleAvatar}
+            displayName={(profile as Profile).full_name}
+          />
+          <p className="text-xs text-gray-400 mt-2">Click your photo to change it</p>
+        </div>
+
         <h2 className="font-semibold text-gray-800 mb-5">Personal Information</h2>
         <ProfileForm profile={profile as Profile} />
       </Card>
