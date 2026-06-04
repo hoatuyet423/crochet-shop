@@ -43,3 +43,9 @@ next-env.d.ts
 # local dev artifacts
 /screenshots
 /scripts
+
+# ui-agent temporary screenshots (uploaded via GitHub API, never committed)
+ui-agent/screenshots/
+
+# supabase
+.supabase/temp/*

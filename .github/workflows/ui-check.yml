@@ -1,0 +1,52 @@
+name: UI Check
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-start:
+    name: Build & server health check
+    runs-on: ubuntu-latest
+
+    env:
+      # Provide enough env for Next.js to build without crashing on missing vars.
+      # Real secrets are not needed — this job only checks that the app compiles
+      # and the dev server starts. Add real secrets if your build-time code
+      # requires them (e.g. NEXT_PUBLIC_SUPABASE_URL).
+      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co' }}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder' }}
+      NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || 'pk_test_placeholder' }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Start dev server
+        run: npm run dev &
+        env:
+          PORT: 3000
+
+      - name: Wait for server to be ready
+        run: |
+          echo "Waiting for dev server on port 3000..."
+          curl \
+            --silent \
+            --fail \
+            --retry 15 \
+            --retry-delay 2 \
+            --retry-connrefused \
+            http://localhost:3000
+          echo "Server is up."

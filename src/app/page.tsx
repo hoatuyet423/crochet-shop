@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { ProductGrid } from '@/components/product/ProductGrid'
+import { ProductCatalog } from '@/components/product/ProductCatalog'
 import { createClient } from '@/lib/supabase/server'
 import type { Product } from '@/types'
 
@@ -66,11 +66,7 @@ export default async function Home() {
 
       {/* Catalog */}
       <section id="catalog" className="max-w-6xl mx-auto px-4 sm:px-6 py-16">
-        <div className="text-center mb-10">
-          <h2 className="font-display text-3xl font-bold text-gray-800 mb-2">Our Collection</h2>
-          <p className="text-gray-500">Browse handmade pieces, each crafted just for you</p>
-        </div>
-        <ProductGrid products={(products as Product[]) ?? []} />
+        <ProductCatalog initialProducts={(products as Product[]) ?? []} />
       </section>
 
       {/* About */}
